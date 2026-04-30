@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach Sport</title>
+<style>
+body { margin:0; font-family: system-ui; background:#0f172a; color:white; }
+.topbar { position:fixed; top:10px; left:0; right:0; display:flex; justify-content:space-between; padding:0 20px; font-size:14px; }
+.container { height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
+.circle { width:220px; height:220px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:42px; margin:20px; }
+input, button { padding:10px; margin:5px; border:none; border-radius:10px; }
+button { background:#22c55e; color:white; }
+#nextInfo { margin-top:10px; font-size:18px; color:#cbd5f5; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div id="timeLeft">Temps restant: --</div>
+  <div id="repsLeft">Reps restantes: --</div>
+</div>
+
+<div class="container">
+
+<div id="setup">
+  <input id="total" type="number" placeholder="Total reps">
+  <input id="time" type="number" placeholder="Temps (min)">
+  <br>
+  <button onclick="generate()">Créer séance</button>
+</div>
+
+<div id="workout" style="display:none;">
+  <button onclick="startWorkout()">START</button>
+  <div id="circle" class="circle">--</div>
+  <div id="label"></div>
+  <div id="nextInfo"></div>
+  <button id="pauseBtn" onclick="togglePause()" style="display:none;">PAUSE</button>
+  <button onclick="skip()">TERMINER</button>
+</div>
+
+</div>
+
+<script>
+let series=[];
+let current=0;
+let done=0;
+let totalTime=0;
+let globalTimer;
+let rafId;
+
+let paused=false;
+let remainingPhaseMs=0;
+let phaseDuration=0;
+let phaseStart=0;
+let currentCallback;
+let currentColor;
+let currentLabel;
+let currentReps=0;
+let isSeriesPhase=false;
+
+function generate(){
+  let total=parseInt(document.getElementById('total').value);
+  let minutes=parseInt(document.getElementById('time').value);
+
+  totalTime=minutes*60;
+
+  series=[];
+  let remaining=total;
+  while(remaining>0){
+    let r=Math.min(remaining, Math.floor(Math.random()*15)+1);
+    series.push(r);
+    remaining-=r;
+  }
+
+  current=0;
+  done=0;
+
+  document.getElementById('setup').style.display='none';
+  document.getElementById('workout').style.display='block';
+
+  updateTop();
+}
+
+function formatTime(sec){
+  let m=Math.floor(sec/60);
+  let s=sec%60;
+  return m+":"+(s<10?"0":"")+s;
+}
+
+function startWorkout(){
+  document.getElementById('pauseBtn').style.display='inline-block';
+
+  // afficher la première série pendant le countdown
+  let firstReps = series[0] || 0;
+  document.getElementById('nextInfo').innerText = "Première série : " + firstReps + " reps";
+
+  runPhase(3,'PREP','blue',()=>{
+    startGlobalTimer();
+    nextSeries();
+  }, false, 0);
+}
+
+function startGlobalTimer(){
+  globalTimer=setInterval(()=>{
+    if(!paused){
+      totalTime--;
+      updateTop();
+      if(totalTime<=0){ finish(); }
+    }
+  },1000);
+}
+
+function updateTop(){
+  document.getElementById('timeLeft').innerText="Temps restant: "+formatTime(Math.max(0,totalTime));
+  let remaining=series.slice(current).reduce((a,b)=>a+b,0);
+  document.getElementById('repsLeft').innerText="Reps restantes: "+remaining;
+}
+
+function nextSeries(){
+  if(current>=series.length){ finish(); return; }
+
+  document.getElementById('nextInfo').innerText="";
+
+  let reps=series[current];
+  runPhase(reps,'SERIE','red',()=>{
+    done+=reps;
+    rest(reps);
+  }, true, reps);
+}
+
+function rest(lastReps){
+  let restTime= lastReps<8 ? 15 : 30;
+
+  let nextReps=series[current+1]||0;
+  document.getElementById('nextInfo').innerText="Prochaine série : "+nextReps+" reps";
+
+  current++;
+
+  if(current>=series.length){ finish(); return; }
+
+  runPhase(restTime,'REPOS','blue',()=>{
+    nextSeries();
+  }, false, 0);
+}
+
+function runPhase(seconds,label,color,callback, isSeries, reps){
+  cancelAnimationFrame(rafId);
+
+  phaseDuration = seconds*1000;
+  remainingPhaseMs = phaseDuration;
+  currentCallback = callback;
+  currentColor = color;
+  currentLabel = label;
+  currentReps = reps;
+  isSeriesPhase = isSeries;
+
+  startPhase();
+}
+
+function startPhase(){
+  phaseStart = performance.now();
+
+  function animate(now){
+    if(paused) return;
+
+    let elapsed = now - phaseStart;
+    let remaining = Math.max(0, remainingPhaseMs - elapsed);
+
+    let progress = remaining / phaseDuration;
+    let percent = progress*100;
+
+    let circle=document.getElementById('circle');
+    let labelDiv=document.getElementById('label');
+
+    circle.style.background=`conic-gradient(${currentColor==='red'?'red':'#1e3a8a'} ${percent}%, #222 ${percent}%)`;
+    circle.innerText=Math.ceil(remaining/1000);
+    labelDiv.innerText=currentLabel;
+
+    if(remaining>0){
+      rafId=requestAnimationFrame(animate);
+    } else {
+      currentCallback();
+    }
+  }
+
+  rafId=requestAnimationFrame(animate);
+}
+
+function togglePause(){
+  paused=!paused;
+  let btn=document.getElementById('pauseBtn');
+
+  if(paused){
+    btn.innerText="RESUME";
+    cancelAnimationFrame(rafId);
+
+    let now=performance.now();
+    let elapsed=now-phaseStart;
+    remainingPhaseMs=Math.max(0, remainingPhaseMs - elapsed);
+  } else {
+    btn.innerText="PAUSE";
+    startPhase();
+  }
+}
+
+function skip(){
+  cancelAnimationFrame(rafId);
+
+  // si on est en série → on compte les reps quand même
+  if(isSeriesPhase){
+    done += currentReps;
+  }
+
+  currentCallback();
+}
+
+function finish(){
+  cancelAnimationFrame(rafId);
+  clearInterval(globalTimer);
+  document.body.innerHTML='<div style="display:flex;justify-content:center;align-items:center;height:100vh;font-size:30px;text-align:center;">Fin de la séance ! Félicitations !</div>';
+}
+</script>
