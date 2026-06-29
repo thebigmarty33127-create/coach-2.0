@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coach Sport</title>
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #0c1222;
@@ -54,8 +55,9 @@ body::before {
   right: 0;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 16px 60px 16px 20px;
   z-index: 10;
   flex-wrap: wrap;
 }
@@ -74,15 +76,27 @@ body::before {
   -webkit-backdrop-filter: blur(12px);
 }
 
-.stat-pill span {
+.stat-pill span { color: var(--muted); font-weight: 400; }
+.stat-pill strong { color: var(--text); font-variant-numeric: tabular-nums; }
+
+.settings-btn {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 11;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
   color: var(--muted);
-  font-weight: 400;
+  font-size: 18px;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: background 0.15s, color 0.15s;
 }
 
-.stat-pill strong {
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
+.settings-btn:hover { background: var(--surface-hover); color: var(--text); }
 
 .container {
   position: relative;
@@ -98,7 +112,7 @@ body::before {
 
 .card {
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
   padding: 36px 32px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -107,6 +121,8 @@ body::before {
   -webkit-backdrop-filter: blur(16px);
   animation: fadeUp 0.5s ease;
 }
+
+.card-wide { max-width: 480px; }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
@@ -121,20 +137,17 @@ body::before {
 }
 
 .card-subtitle {
-  margin: 0 0 28px;
+  margin: 0 0 24px;
   color: var(--muted);
   font-size: 15px;
   line-height: 1.5;
 }
 
-.field {
-  margin-bottom: 16px;
-  text-align: left;
-}
+.field { margin-bottom: 18px; text-align: left; }
 
 .field label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   font-size: 13px;
   font-weight: 500;
   color: var(--muted);
@@ -158,7 +171,60 @@ body::before {
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-.field input::placeholder { color: #64748b; }
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.chip:hover { background: var(--surface-hover); color: var(--text); }
+
+.chip.selected {
+  background: rgba(34,197,94,0.15);
+  border-color: rgba(34,197,94,0.5);
+  color: #86efac;
+}
+
+.error-msg {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #fca5a5;
+  min-height: 20px;
+}
+
+.link-btn {
+  display: inline-block;
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-btn:hover { color: var(--text); }
 
 .btn {
   display: inline-flex;
@@ -187,9 +253,7 @@ body::before {
   box-shadow: 0 4px 20px var(--accent-glow);
 }
 
-.btn-primary:hover {
-  box-shadow: 0 6px 28px var(--accent-glow);
-}
+.btn-primary:hover { box-shadow: 0 6px 28px var(--accent-glow); }
 
 .btn-start {
   background: linear-gradient(135deg, #22c55e, #16a34a);
@@ -223,6 +287,224 @@ body::before {
   border-color: rgba(239,68,68,0.4);
 }
 
+.preview-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  text-align: left;
+}
+
+.preview-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.preview-list li:last-child { border-bottom: none; }
+
+.preview-total { color: var(--muted); font-size: 13px; }
+
+.preview-section {
+  padding: 14px 0 6px !important;
+  border-bottom: none !important;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.preview-warmup {
+  font-size: 14px !important;
+  color: var(--muted);
+  padding: 8px 0 !important;
+}
+
+.preview-row {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.preview-row span { flex: 1; text-align: left; }
+
+.help-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.help-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: rgba(59,130,246,0.4);
+}
+
+.chip-ban.selected {
+  background: rgba(239,68,68,0.15);
+  border-color: rgba(239,68,68,0.5);
+  color: #fca5a5;
+}
+
+.banned-scroll {
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.exercise-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 24px;
+  max-width: 200px;
+}
+
+.exercise-name-row .exercise-name {
+  min-height: 0;
+  max-width: none;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 28px 24px;
+  background: #151d2e;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  animation: fadeUp 0.3s ease;
+}
+
+.modal-card h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.modal-card p {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.modal-close {
+  width: 100%;
+  margin: 0;
+}
+
+.check-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+  cursor: pointer;
+}
+
+.check-field input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.check-field small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.field-hint {
+  display: block;
+  margin: -4px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.weights-section {
+  padding: 14px 16px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.weight-block {
+  margin-bottom: 14px;
+}
+
+.weight-block:last-child {
+  margin-bottom: 0;
+}
+
+.weight-block-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.chip-weight.selected {
+  background: rgba(59,130,246,0.15);
+  border-color: rgba(59,130,246,0.5);
+  color: #93c5fd;
+}
+
+.check-field span {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.preview-meta {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.preview-actions .btn-secondary { width: 100%; margin: 0; }
+
 .workout-area {
   display: flex;
   flex-direction: column;
@@ -230,10 +512,7 @@ body::before {
   animation: fadeUp 0.5s ease;
 }
 
-.timer-wrap {
-  position: relative;
-  margin: 8px 0 20px;
-}
+.timer-wrap { position: relative; margin: 8px 0 12px; }
 
 .timer-ring {
   width: 260px;
@@ -242,13 +521,12 @@ body::before {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow:
-    0 0 0 4px rgba(255,255,255,0.04),
-    0 20px 60px rgba(0,0,0,0.4);
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.4);
   transition: box-shadow 0.4s;
 }
 
 .timer-ring.phase-prep  { box-shadow: 0 0 0 4px rgba(59,130,246,0.15), 0 0 40px rgba(59,130,246,0.2), 0 20px 60px rgba(0,0,0,0.4); }
+.timer-ring.phase-warmup { box-shadow: 0 0 0 4px rgba(245,158,11,0.15), 0 0 40px rgba(245,158,11,0.2), 0 20px 60px rgba(0,0,0,0.4); }
 .timer-ring.phase-series { box-shadow: 0 0 0 4px rgba(239,68,68,0.15), 0 0 40px rgba(239,68,68,0.25), 0 20px 60px rgba(0,0,0,0.4); }
 .timer-ring.phase-rest  { box-shadow: 0 0 0 4px rgba(6,182,212,0.15), 0 0 40px rgba(6,182,212,0.2), 0 20px 60px rgba(0,0,0,0.4); }
 
@@ -261,7 +539,8 @@ body::before {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
+  padding: 12px;
 }
 
 .timer-value {
@@ -270,6 +549,15 @@ body::before {
   line-height: 1;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
+}
+
+.exercise-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  max-width: 160px;
+  line-height: 1.3;
+  min-height: 18px;
 }
 
 .phase-badge {
@@ -284,6 +572,7 @@ body::before {
 }
 
 .phase-badge.prep   { background: rgba(59,130,246,0.2); color: #93c5fd; }
+.phase-badge.warmup { background: rgba(245,158,11,0.2); color: #fcd34d; }
 .phase-badge.series { background: rgba(239,68,68,0.2);  color: #fca5a5; }
 .phase-badge.rest   { background: rgba(6,182,212,0.2);  color: #67e8f9; }
 
@@ -292,6 +581,7 @@ body::before {
   font-size: 15px;
   color: var(--muted);
   min-height: 22px;
+  max-width: 320px;
 }
 
 .controls {
@@ -320,11 +610,7 @@ body::before {
   backdrop-filter: blur(16px);
 }
 
-.finish-icon {
-  font-size: 56px;
-  margin-bottom: 16px;
-  display: block;
-}
+.finish-icon { font-size: 56px; margin-bottom: 16px; display: block; }
 
 .finish-card h1 {
   margin: 0 0 10px;
@@ -334,10 +620,42 @@ body::before {
 }
 
 .finish-card p {
-  margin: 0;
+  margin: 0 0 16px;
   color: var(--muted);
   font-size: 16px;
   line-height: 1.5;
+}
+
+.finish-list {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  text-align: left;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.finish-list li { padding: 6px 0; border-bottom: 1px solid var(--border); }
+.finish-list li:last-child { border-bottom: none; }
+
+.finish-btn { width: auto; margin-top: 8px; }
+
+.finish-card-inline {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: fadeUp 0.5s ease;
+}
+
+.finish-card-inline .finish-list {
+  width: 100%;
+  margin: 0 0 24px;
+}
+
+.finish-summary {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 14px;
 }
 </style>
 </head>
@@ -345,239 +663,149 @@ body::before {
 
 <div class="topbar">
   <div class="stat-pill"><span>Temps</span> <strong id="timeLeft">--:--</strong></div>
-  <div class="stat-pill"><span>Reps</span> <strong id="repsLeft">--</strong></div>
+  <div class="stat-pill"><span>Exercice</span> <strong id="exerciseProgress">--</strong></div>
 </div>
+
+<button id="settingsBtn" class="settings-btn" onclick="openProfileSettings()" title="Mon profil">⚙</button>
 
 <div class="container">
 
-<div id="setup" class="card">
-  <h1 class="card-title">Coach Sport</h1>
-  <p class="card-subtitle">Définissez votre objectif et la durée de la séance.</p>
+<!-- Profile onboarding / settings -->
+<div id="profile" class="card card-wide" style="display:none;">
+  <h1 class="card-title">Mon profil</h1>
+  <p class="card-subtitle">Ces informations seront pré-remplies à chaque séance.</p>
+
   <div class="field">
-    <label for="total">Nombre total de répétitions</label>
-    <input id="total" type="number" placeholder="Ex. 100" min="1">
+    <label>Équipement disponible</label>
+    <div id="profileEquipment" class="chip-group"></div>
+  </div>
+  <div id="profileWeightsSection" class="field weights-section" style="display:none;">
+    <label>Charges disponibles</label>
+    <small class="field-hint">Un poids plus léger peut remplacer un plus lourd (ex. squat léger), mais pas l'inverse (ex. pas d'élévations avec un lourd).</small>
+    <div id="profileWeights"></div>
   </div>
   <div class="field">
-    <label for="time">Durée (minutes)</label>
-    <input id="time" type="number" placeholder="Ex. 30" min="1">
+    <label>Muscles ciblés</label>
+    <div id="profileMuscles" class="chip-group"></div>
   </div>
-  <button class="btn btn-primary" onclick="generate()">Créer la séance</button>
+  <div class="field">
+    <label>Blessures (optionnel)</label>
+    <div id="profileInjuries" class="chip-group"></div>
+  </div>
+  <label class="check-field">
+    <input type="checkbox" id="profileNoJumpRun">
+    <span>Pas de sauts ni de course<small>Idéal en appartement — échauffement et séance adaptés</small></span>
+  </label>
+  <div class="field">
+    <label>Exercices à exclure (optionnel)</label>
+    <small style="display:block;margin:-4px 0 10px;color:var(--muted);font-size:12px;">Sélectionnez les exercices que vous ne voulez jamais voir dans vos séances.</small>
+    <div id="profileBannedExercises" class="chip-group banned-scroll"></div>
+  </div>
+  <div class="field">
+    <label for="profileDuration">Durée totale (min)</label>
+    <input id="profileDuration" type="number" min="5" placeholder="30">
+  </div>
+
+  <p id="profileError" class="error-msg"></p>
+  <button class="btn btn-primary" onclick="saveProfileAndContinue()">Enregistrer le profil</button>
 </div>
 
+<!-- Session setup (pre-filled from profile) -->
+<div id="setup" class="card card-wide" style="display:none;">
+  <h1 class="card-title">Coach Sport</h1>
+  <p class="card-subtitle">Ajustez les paramètres de votre séance ou lancez directement.</p>
+
+  <div class="field">
+    <label>Équipement</label>
+    <div id="setupEquipment" class="chip-group"></div>
+  </div>
+  <div class="field">
+    <label>Muscles ciblés</label>
+    <div id="setupMuscles" class="chip-group"></div>
+  </div>
+  <div class="field">
+    <label>Blessures</label>
+    <div id="setupInjuries" class="chip-group"></div>
+  </div>
+  <label class="check-field">
+    <input type="checkbox" id="setupNoJumpRun">
+    <span>Pas de sauts ni de course<small>Idéal en appartement — échauffement et séance adaptés</small></span>
+  </label>
+  <div class="field">
+    <label for="setupDuration">Durée totale (min)</label>
+    <input id="setupDuration" type="number" min="5" placeholder="30">
+  </div>
+
+  <p id="setupError" class="error-msg"></p>
+  <button class="btn btn-primary" onclick="createSession()">Créer la séance</button>
+  <button type="button" class="link-btn" onclick="openProfileSettings()">Modifier mon profil</button>
+</div>
+
+<!-- Workout preview -->
+<div id="preview" class="card card-wide" style="display:none;">
+  <h1 class="card-title">Votre séance</h1>
+  <p id="previewMeta" class="preview-meta"></p>
+  <ul id="previewList" class="preview-list"></ul>
+  <div class="preview-actions">
+    <button class="btn btn-primary" onclick="startFromPreview()">Démarrer</button>
+    <button class="btn btn-secondary" onclick="backToSetup()">Modifier</button>
+  </div>
+</div>
+
+<!-- Active workout -->
 <div id="workout" class="workout-area" style="display:none;">
-  <button class="btn btn-start" onclick="startWorkout()">Démarrer</button>
   <div class="timer-wrap">
     <div id="circle" class="timer-ring">
       <div class="timer-inner">
         <div id="label" class="phase-badge"></div>
         <div id="timerValue" class="timer-value">--</div>
+        <div class="exercise-name-row">
+          <div id="exerciseName" class="exercise-name"></div>
+          <button id="workoutHelpBtn" type="button" class="help-btn" style="display:none" aria-label="Comment faire">?</button>
+        </div>
       </div>
     </div>
   </div>
   <div id="nextInfo"></div>
   <div class="controls">
-    <button id="pauseBtn" class="btn btn-secondary" onclick="togglePause()" style="display:none;">Pause</button>
-    <button class="btn btn-danger" onclick="skip()">Terminer</button>
+    <button id="pauseBtn" class="btn btn-secondary" onclick="Workout.togglePause()" style="display:none;">Pause</button>
+    <button class="btn btn-secondary" onclick="Workout.skipPhase()">Passer</button>
+    <button class="btn btn-danger" onclick="Workout.endWorkout()">Arrêter la séance</button>
   </div>
 </div>
 
+<!-- Workout complete -->
+<div id="finish" class="card card-wide finish-card-inline" style="display:none;">
+  <span class="finish-icon">🏆</span>
+  <h1 id="finishTitle" class="card-title"></h1>
+  <p id="finishSubtitle" class="card-subtitle"></p>
+  <p id="finishSummary" class="finish-summary"></p>
+  <ul id="finishList" class="finish-list"></ul>
+  <button class="btn btn-primary" onclick="goHome()">Retour à l'accueil</button>
 </div>
 
+</div>
+
+<div id="exerciseModal" class="modal-overlay" onclick="if(event.target===this)ExerciseHelp.close()">
+  <div class="modal-card">
+    <h2 id="modalTitle"></h2>
+    <p id="modalDesc"></p>
+    <button type="button" class="btn btn-primary modal-close" onclick="ExerciseHelp.close()">Fermer</button>
+  </div>
+</div>
+
+<script src="data/exercises.js"></script>
+<script src="data/descriptions.js"></script>
+<script src="js/exercise-help.js"></script>
+<script src="js/sounds.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/generator.js"></script>
+<script src="js/workout.js"></script>
+<script src="js/app.js"></script>
 <script>
-let series=[];
-let current=0;
-let done=0;
-let totalTime=0;
-let globalTimer;
-let rafId;
-
-let paused=false;
-let remainingPhaseMs=0;
-let phaseDuration=0;
-let phaseStart=0;
-let currentCallback;
-let currentColor;
-let currentLabel;
-let currentReps=0;
-let isSeriesPhase=false;
-
-const PHASE_COLORS = {
-  red:  { fill: '#ef4444', track: '#1e293b', cls: 'phase-series' },
-  blue: { fill: '#3b82f6', track: '#1e293b', cls: 'phase-prep'  },
-  rest: { fill: '#06b6d4', track: '#1e293b', cls: 'phase-rest'  }
-};
-
-function generate(){
-  let total=parseInt(document.getElementById('total').value);
-  let minutes=parseInt(document.getElementById('time').value);
-
-  if(!total || !minutes) return;
-
-  totalTime=minutes*60;
-
-  series=[];
-  let remaining=total;
-  while(remaining>0){
-    let r=Math.min(remaining, Math.floor(Math.random()*15)+1);
-    series.push(r);
-    remaining-=r;
-  }
-
-  current=0;
-  done=0;
-
-  document.getElementById('setup').style.display='none';
-  document.getElementById('workout').style.display='flex';
-
-  updateTop();
-}
-
-function formatTime(sec){
-  let m=Math.floor(sec/60);
-  let s=sec%60;
-  return m+":"+(s<10?"0":"")+s;
-}
-
-function startWorkout(){
-  document.querySelector('.btn-start').style.display='none';
-  document.getElementById('pauseBtn').style.display='inline-flex';
-
-  let firstReps = series[0] || 0;
-  document.getElementById('nextInfo').innerText = "Première série : " + firstReps + " reps";
-
-  runPhase(3,'Prépa','blue',()=>{
-    startGlobalTimer();
-    nextSeries();
-  }, false, 0);
-}
-
-function startGlobalTimer(){
-  globalTimer=setInterval(()=>{
-    if(!paused){
-      totalTime--;
-      updateTop();
-      if(totalTime<=0){ finish(); }
-    }
-  },1000);
-}
-
-function updateTop(){
-  document.getElementById('timeLeft').innerText=formatTime(Math.max(0,totalTime));
-  let remaining=series.slice(current).reduce((a,b)=>a+b,0);
-  document.getElementById('repsLeft').innerText=remaining;
-}
-
-function nextSeries(){
-  if(current>=series.length){ finish(); return; }
-
-  document.getElementById('nextInfo').innerText="";
-
-  let reps=series[current];
-  runPhase(reps,'Série','red',()=>{
-    done+=reps;
-    rest(reps);
-  }, true, reps);
-}
-
-function rest(lastReps){
-  let restTime= lastReps<8 ? 15 : 30;
-
-  let nextReps=series[current+1]||0;
-  document.getElementById('nextInfo').innerText="Prochaine série : "+nextReps+" reps";
-
-  current++;
-
-  if(current>=series.length){ finish(); return; }
-
-  runPhase(restTime,'Repos','rest',()=>{
-    nextSeries();
-  }, false, 0);
-}
-
-function runPhase(seconds,label,color,callback, isSeries, reps){
-  cancelAnimationFrame(rafId);
-
-  phaseDuration = seconds*1000;
-  remainingPhaseMs = phaseDuration;
-  currentCallback = callback;
-  currentColor = color;
-  currentLabel = label;
-  currentReps = reps;
-  isSeriesPhase = isSeries;
-
-  startPhase();
-}
-
-function startPhase(){
-  phaseStart = performance.now();
-
-  function animate(now){
-    if(paused) return;
-
-    let elapsed = now - phaseStart;
-    let remaining = Math.max(0, remainingPhaseMs - elapsed);
-
-    let progress = remaining / phaseDuration;
-    let percent = progress*100;
-
-    let circle=document.getElementById('circle');
-    let labelDiv=document.getElementById('label');
-    let timerValue=document.getElementById('timerValue');
-    let palette = PHASE_COLORS[currentColor] || PHASE_COLORS.blue;
-
-    circle.style.background=`conic-gradient(${palette.fill} ${percent}%, ${palette.track} ${percent}%)`;
-    circle.className = 'timer-ring ' + palette.cls;
-    timerValue.innerText=Math.ceil(remaining/1000);
-    labelDiv.innerText=currentLabel;
-    labelDiv.className = 'phase-badge ' + palette.cls.replace('phase-', '');
-
-    if(remaining>0){
-      rafId=requestAnimationFrame(animate);
-    } else {
-      currentCallback();
-    }
-  }
-
-  rafId=requestAnimationFrame(animate);
-}
-
-function togglePause(){
-  paused=!paused;
-  let btn=document.getElementById('pauseBtn');
-
-  if(paused){
-    btn.innerText="Reprendre";
-    cancelAnimationFrame(rafId);
-
-    let now=performance.now();
-    let elapsed=now-phaseStart;
-    remainingPhaseMs=Math.max(0, remainingPhaseMs - elapsed);
-  } else {
-    btn.innerText="Pause";
-    startPhase();
-  }
-}
-
-function skip(){
-  cancelAnimationFrame(rafId);
-
-  if(isSeriesPhase){
-    done += currentReps;
-  }
-
-  currentCallback();
-}
-
-function finish(){
-  cancelAnimationFrame(rafId);
-  clearInterval(globalTimer);
-  document.body.innerHTML=`
-    <div class="finish-screen">
-      <div class="finish-card">
-        <span class="finish-icon">🏆</span>
-        <h1>Séance terminée !</h1>
-        <p>Félicitations — vous avez accompli ${done} répétitions.</p>
-      </div>
-    </div>`;
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
 }
 </script>
+</body>
+</html>

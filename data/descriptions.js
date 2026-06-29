@@ -1,0 +1,70 @@
+window.EXERCISE_DESCRIPTIONS = {
+  pushups: 'Mains au sol, écartées largeur d\'épaules. Corps aligné de la tête aux talons. Descendez la poitrine vers le sol en pliant les coudes, puis repoussez.',
+  incline_pushups: 'Mains sur un banc ou une surface surélevée. Même mouvement que les pompes, inclinaison réduisant la charge.',
+  dumbbell_press: 'Allongé sur un banc, haltères au niveau de la poitrine. Poussez vers le haut jusqu\'à extension des bras, redescendez contrôlé.',
+  dumbbell_fly: 'Allongé, bras tendus au-dessus de la poitrine. Écartez les haltères en arc de cercle, coudes légèrement fléchis, puis resserrez.',
+  pullups: 'Suspendu à la barre, paumes vers l\'avant. Tirez jusqu\'à ce que le menton dépasse la barre, redescendez en contrôlant.',
+  inverted_row: 'Suspendu sous une barre basse, corps incliné. Tirez la poitrine vers la barre en serrant les omoplates.',
+  dumbbell_row: 'Buste penché, main sur un banc. Tirez l\'haltère vers la hanche en gardant le coude près du corps.',
+  superman: 'Allongé sur le ventre, bras tendus. Soulevez simultanément bras, poitrine et jambes, maintenez brièvement, redescendez.',
+  shoulder_press: 'Debout ou assis, haltères au niveau des épaules. Poussez au-dessus de la tête sans cambrer le dos.',
+  lateral_raise: 'Debout, haltères le long du corps. Levez les bras sur les côtés jusqu\'à hauteur d\'épaules, coudes légèrement fléchis.',
+  pike_pushups: 'Position en V inversé, hanches hautes. Fléchissez les coudes pour amener la tête vers le sol, puis repoussez.',
+  bicep_curl: 'Debout, haltères paumes vers l\'avant. Fléchissez les coudes pour monter les haltères vers les épaules.',
+  tricep_extension: 'Debout ou assis, haltère au-dessus de la tête. Fléchissez les coudes pour descendre l\'haltère derrière la tête, puis tendez.',
+  dips: 'Mains sur un banc derrière vous, jambes tendues. Fléchissez les coudes pour descendre, puis repoussez.',
+  plank: 'Appui sur avant-bras et orteils. Corps droit et gainé, ne creusez pas le bas du dos.',
+  crunch: 'Allongé, genoux fléchis. Soulevez les épaules du sol en contractant les abdos, sans tirer sur la nuque.',
+  bicycle_crunch: 'Allongé, mains derrière la tête. Amenez coude opposé vers genou opposé en alternant comme un vélo.',
+  dead_bug: 'Allongé, bras vers le plafond, genoux à 90°. Étendez bras et jambe opposés sans décoller le bas du dos.',
+  russian_twist: 'Assis, buste légèrement incliné, pieds au sol ou levés. Tournez le buste d\'un côté à l\'autre.',
+  leg_raise: 'Allongé, jambes tendues. Levez les jambes à la verticale en gardant le bas du dos plaqué au sol.',
+  side_plank: 'Appui sur un avant-bras et le bord du pied. Corps aligné latéralement, hanches ne tombent pas.',
+  hollow_hold: 'Allongé, bras et jambes tendus au-dessus du sol. Creusez légèrement les abdos, bas du dos plaqué.',
+  heel_touches: 'Allongé, genoux fléchis. Alternez en touchant chaque talon avec la main du même côté.',
+  bird_dog: 'À quatre pattes. Étendez bras et jambe opposés, maintenez l\'équilibre, alternez.',
+  plank_shoulder_tap: 'Planche haute sur les mains. Touchez l\'épaule opposée en minimisant le balancement des hanches.',
+  flutter_kicks: 'Allongé, jambes tendues légèrement au-dessus du sol. Alternez de petits battements rapides.',
+  reverse_crunch: 'Allongé, genoux fléchis. Ramenez les genoux vers la poitrine en décollant le bassin du sol.',
+  toe_touches: 'Allongé, jambes tendues vers le plafond ou verticales. Tentez de toucher vos orteils en contractant les abdos.',
+  squat: 'Pieds largeur d\'épaules. Descendez comme pour vous asseoir, genoux dans l\'axe des pieds, remontez en poussant dans les talons.',
+  goblet_squat: 'Tenez un haltère ou kettlebell contre la poitrine. Effectuez un squat profond en gardant le buste droit.',
+  lunge: 'Grand pas en avant, fléchissez les deux genoux à 90°. Poussez sur le pied avant pour revenir, alternez.',
+  glute_bridge: 'Allongé, pieds au sol. Soulevez le bassin en serrant les fessiers, alignez genoux-hanches-épaules.',
+  calf_raise: 'Debout, montez sur la pointe des pieds le plus haut possible, redescendez lentement.',
+  band_pull_apart: 'Tenez l\'élastique devant vous, bras tendus. Écartez les bras sur les côtés en serrant les omoplates.',
+  band_squat: 'Élastique sous les pieds, handles aux épaules. Squat en gardant tension sur l\'élastique.',
+  kettlebell_swing: 'Pieds largeur d\'épaules, kettlebell entre les jambes. Balancement jusqu\'à hauteur de poitrine en poussant des hanches.',
+  kettlebell_goblet_squat: 'Kettlebell contre la poitrine, coudes vers le bas. Squat profond, coudes passent entre les genoux.',
+  kettlebell_deadlift: 'Kettlebell entre les pieds. Penchez-vous en gardant le dos plat, saisissez la poignée, redressez-vous en poussant des hanches.',
+  kettlebell_row: 'Buste penché, kettlebell pendante. Tirez vers la hanche en serrant l\'omoplate, alternez ou un bras.',
+  kettlebell_press: 'Kettlebell au niveau de l\'épaule. Poussez au-dessus de la tête, redescendez contrôlé.',
+  kettlebell_halo: 'Tenez la kettlebell devant la poitrine. Faites-la tourner lentement autour de la tête dans un cercle.',
+  kettlebell_rdl: 'Debout, kettlebell devant les cuisses. Penchez-vous en poussant les hanches arrière, dos plat, étirez l\'arrière des cuisses.',
+  kettlebell_windmill: 'Kettlebell au-dessus de la tête, bras tendu. Penchez le buste sur le côté en glissant l\'autre main le long de la jambe.',
+  kettlebell_thruster: 'Kettlebell en goblet. Squat puis en remontant, poussez la kettlebell au-dessus de la tête.',
+  kettlebell_clean: 'De la position basse, tirez la kettlebell et enroulez le poignet pour l\'amener en rack à l\'épaule.',
+  kettlebell_turkish_getup: 'Allongé, kettlebell bras tendu vers le plafond. Relevez-vous en plusieurs étapes jusqu\'à debout, puis redescendez dans l\'ordre inverse.',
+  mountain_climber: 'Planche haute. Ramenez alternativement chaque genou vers la poitrine à rythme soutenu.',
+  burpee: 'Squat, mains au sol, pieds en arrière en planche, pompe optionnelle, revenez en squat et sautez bras levés.',
+  jumping_jacks: 'Debout, pieds joints. Sautez en écartant jambes et levant les bras au-dessus de la tête, revenez.',
+  high_knees: 'Course sur place en montant les genoux le plus haut possible, rythme rapide.',
+  arm_circles: 'Bras tendus sur les côtés. Faites de grands cercles avant puis arrière.',
+  jogging: 'Course sur place légère, atterrissage souple, coudes fléchis.',
+  torso_twist: 'Debout, pieds écartés. Tournez le buste d\'un côté à l\'autre, bras relâchés ou croisés sur la poitrine.',
+  marching: 'Marche sur place en levant les genoux modérément, balancez les bras naturellement.',
+  walking_high_knees: 'Marche sur place en montant les genoux sans sauter, un pied toujours au sol.',
+  hip_circles: 'Mains sur les hanches. Faites des cercles larges avec le bassin dans un sens puis l\'autre.'
+};
+
+window.getExerciseInfo = function(id) {
+  const ex = EXERCISES.find(e => e.id === id);
+  if (ex) {
+    return { id: ex.id, name: ex.nameFr, description: EXERCISE_DESCRIPTIONS[id] || 'Description non disponible.' };
+  }
+  const warm = WARMUP_BLOCKS.find(w => w.id === id);
+  if (warm) {
+    return { id: warm.id, name: warm.nameFr, description: EXERCISE_DESCRIPTIONS[id] || 'Description non disponible.' };
+  }
+  return null;
+};
