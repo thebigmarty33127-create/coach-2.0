@@ -492,9 +492,20 @@ body::before {
 }
 
 .preview-meta {
-  margin: 0 0 24px;
+  margin: 0 0 8px;
   color: var(--muted);
   font-size: 14px;
+}
+
+.preview-hint {
+  margin: 0 0 24px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: #fca5a5;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .preview-actions {
@@ -559,6 +570,21 @@ body::before {
   line-height: 1.3;
   min-height: 18px;
 }
+
+.phase-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  max-width: 180px;
+  letter-spacing: 0.02em;
+}
+
+.phase-hint:empty { display: none; }
+
+.phase-hint.series { color: #fca5a5; }
+.phase-hint.warmup { color: #fcd34d; }
 
 .phase-badge {
   display: inline-block;
@@ -745,6 +771,7 @@ body::before {
 <div id="preview" class="card card-wide" style="display:none;">
   <h1 class="card-title">Votre séance</h1>
   <p id="previewMeta" class="preview-meta"></p>
+  <p class="preview-hint">Pendant chaque exercice : enchaînez un maximum de répétitions pendant la minute impartie.</p>
   <ul id="previewList" class="preview-list"></ul>
   <div class="preview-actions">
     <button class="btn btn-primary" onclick="startFromPreview()">Démarrer</button>
@@ -763,6 +790,7 @@ body::before {
           <div id="exerciseName" class="exercise-name"></div>
           <button id="workoutHelpBtn" type="button" class="help-btn" style="display:none" aria-label="Comment faire">?</button>
         </div>
+        <div id="phaseHint" class="phase-hint" aria-live="polite"></div>
       </div>
     </div>
   </div>

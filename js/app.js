@@ -144,7 +144,7 @@ function renderPreview(workout) {
   }
 
   html += workout.exercises.map(ex =>
-    `<li class="preview-row"><span><strong>${ex.name}</strong> — ${ex.durationMinutes} min</span>${ExerciseHelp.helpButton(ex.id)}</li>`
+    `<li class="preview-row"><span><strong>${ex.name}</strong> — ${ex.durationMinutes} min · max reps</span>${ExerciseHelp.helpButton(ex.id)}</li>`
   ).join('');
 
   list.innerHTML = html;

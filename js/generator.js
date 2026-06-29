@@ -80,6 +80,22 @@ function pickExercises(candidates, muscles, count) {
   return picked.slice(0, count);
 }
 
+function isLightIntensity(ex, userEquipment) {
+  if (ex.highImpact) return false;
+
+  if (ex.weightOptions?.length) {
+    const applicable = ex.weightOptions.filter(o => userEquipment.includes(o.equipment));
+    if (applicable.length) {
+      return applicable.every(o => o.tier === 'light');
+    }
+  }
+
+  const usesFreeWeights = ex.equipment.some(
+    e => (e === 'dumbbells' || e === 'kettlebell') && userEquipment.includes(e)
+  );
+  return !usesFreeWeights;
+}
+
 function exerciseIntensity(ex, userEquipment) {
   let score = 0;
 
@@ -98,18 +114,26 @@ function exerciseIntensity(ex, userEquipment) {
   );
   if (usesFreeWeights && !ex.weightOptions?.length) score += 10;
 
-  const accessoryOnly = ex.equipment.length > 0 &&
-    ex.equipment.every(e => ['mat', 'bench', 'pull_up_bar', 'resistance_bands'].includes(e));
-  if (accessoryOnly && !ex.highImpact) score += 4;
-
   return score;
 }
 
-function orderByProgressiveIntensity(exercises, userEquipment) {
-  return [...exercises].sort((a, b) => {
-    const diff = exerciseIntensity(a, userEquipment) - exerciseIntensity(b, userEquipment);
-    return diff !== 0 ? diff : Math.random() - 0.5;
-  });
+function pickExercisesTwoPart(candidates, muscles, count, userEquipment) {
+  const lightCount = Math.max(1, Math.round(count * 0.25));
+  let lightPool = candidates.filter(ex => isLightIntensity(ex, userEquipment));
+
+  if (!lightPool.length) {
+    lightPool = [...candidates].sort(
+      (a, b) => exerciseIntensity(a, userEquipment) - exerciseIntensity(b, userEquipment)
+    );
+  }
+
+  const firstPart = pickExercises(lightPool, muscles, lightCount);
+  const usedIds = new Set(firstPart.map(ex => ex.id));
+  let mainPool = candidates.filter(ex => !usedIds.has(ex.id));
+  if (!mainPool.length) mainPool = candidates;
+
+  const secondPart = pickExercises(mainPool, muscles, count - firstPart.length);
+  return [...firstPart, ...secondPart];
 }
 
 function maxExerciseCount(durationMinutes, timePerExercise) {
@@ -183,8 +207,7 @@ function generateWorkout({ equipment, muscles, injuries, duration, noJumpRun, ba
     candidates.length,
     maxExerciseCount(mainDurationMinutes, EXERCISE_DURATION_MINUTES)
   );
-  const picked = pickExercises(candidates, muscles, exerciseCount);
-  const selected = orderByProgressiveIntensity(picked, userEquipment);
+  const selected = pickExercisesTwoPart(candidates, muscles, exerciseCount, userEquipment);
   const mainPhases = buildMainPhases(selected, EXERCISE_DURATION_MINUTES);
 
   const phases = [

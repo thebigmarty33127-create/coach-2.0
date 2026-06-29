@@ -14,6 +14,8 @@ let currentPhase = null;
 let phaseCallback = null;
 let phaseBeeps = { at2: false, at1: false, at0: false };
 
+const AMRAP_HINT = 'Maximum de répétitions';
+
 const PHASE_COLORS = {
   prep:       { fill: '#3b82f6', track: '#1e293b', cls: 'phase-prep',   label: 'Prépa' },
   warmup:     { fill: '#f59e0b', track: '#1e293b', cls: 'phase-warmup', label: 'Échauffement' },
@@ -72,6 +74,8 @@ function startWorkout(workoutPhases, durationMinutes, exercises) {
   document.getElementById('pauseBtn').style.display = 'inline-flex';
   document.getElementById('pauseBtn').innerText = 'Pause';
   document.getElementById('nextInfo').innerText = '';
+  document.getElementById('phaseHint').innerText = '';
+  document.getElementById('phaseHint').className = 'phase-hint';
 
   updateTop();
   Sounds.resume();
@@ -147,6 +151,7 @@ function startPhaseAnimate() {
     const timerValue = document.getElementById('timerValue');
     const exerciseName = document.getElementById('exerciseName');
     const nextInfo = document.getElementById('nextInfo');
+    const phaseHint = document.getElementById('phaseHint');
 
     circle.style.background = `conic-gradient(${palette.fill} ${percent}%, ${palette.track} ${percent}%)`;
     circle.className = 'timer-ring ' + palette.cls;
@@ -156,17 +161,25 @@ function startPhaseAnimate() {
 
     if (currentPhase.type === 'exercise' || currentPhase.type === 'warmup') {
       exerciseName.innerText = currentPhase.exerciseName;
+      phaseHint.innerText = AMRAP_HINT;
+      phaseHint.className = 'phase-hint ' + (currentPhase.type === 'warmup' ? 'warmup' : 'series');
       nextInfo.innerText = '';
     } else if (currentPhase.type === 'transition') {
       exerciseName.innerText = '';
+      phaseHint.innerText = '';
+      phaseHint.className = 'phase-hint';
       nextInfo.innerText = 'Suivant : ' + currentPhase.nextExerciseName;
     } else if (currentPhase.type === 'prep') {
       exerciseName.innerText = '';
+      phaseHint.innerText = '';
+      phaseHint.className = 'phase-hint';
       nextInfo.innerText = currentPhase.nextExerciseName
         ? 'Premier : ' + currentPhase.nextExerciseName
         : '';
     } else {
       exerciseName.innerText = '';
+      phaseHint.innerText = '';
+      phaseHint.className = 'phase-hint';
     }
 
     if (remaining > 0) {
