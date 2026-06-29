@@ -1,4 +1,4 @@
-const CACHE_NAME = 'coach-cache-v11';
+const CACHE_NAME = 'coach-cache-v14';
 
 const ASSETS = [
   './',

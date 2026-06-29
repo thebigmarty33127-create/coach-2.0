@@ -57,7 +57,24 @@ window.EXERCISES = [
   { id: 'kettlebell_clean', nameFr: 'Clean kettlebell', muscles: ['legs', 'back', 'shoulders'], equipment: ['kettlebell'], weightOptions: [{ equipment: 'kettlebell', tier: 'medium' }], avoidIf: ['lower_back', 'shoulder', 'wrist'], highImpact: true, priority: 2 },
   { id: 'kettlebell_turkish_getup', nameFr: 'Turkish get-up', muscles: ['core', 'shoulders', 'legs'], equipment: ['kettlebell'], weightOptions: [{ equipment: 'kettlebell', tier: 'medium' }], avoidIf: ['shoulder', 'wrist', 'lower_back'], priority: 2 },
   { id: 'mountain_climber', nameFr: 'Mountain climbers', muscles: ['core', 'legs'], equipment: ['mat'], avoidIf: ['knee', 'wrist'], priority: 2 },
-  { id: 'burpee', nameFr: 'Burpees', muscles: ['legs', 'chest', 'core'], equipment: ['mat'], avoidIf: ['knee', 'shoulder', 'wrist'], highImpact: true, priority: 1 }
+  { id: 'burpee', nameFr: 'Burpees', muscles: ['legs', 'chest', 'core'], equipment: ['mat'], avoidIf: ['knee', 'shoulder', 'wrist'], highImpact: true, priority: 1 },
+  { id: 'high_plank', nameFr: 'Planche haute', muscles: ['core', 'shoulders'], equipment: ['mat'], avoidIf: ['shoulder', 'wrist'], priority: 3 },
+  { id: 'jump_squat', nameFr: 'Squat sauté', muscles: ['legs', 'glutes'], equipment: [], avoidIf: ['knee', 'lower_back'], highImpact: true, priority: 2 },
+  { id: 'wall_sit', nameFr: 'Chaise murale', muscles: ['legs'], equipment: [], avoidIf: ['knee'], priority: 2 },
+  { id: 'step_up', nameFr: 'Montées sur banc', muscles: ['legs', 'glutes'], equipment: ['bench'], avoidIf: ['knee'], priority: 2 },
+  { id: 'dumbbell_lunge', nameFr: 'Fentes haltères', muscles: ['legs', 'glutes'], equipment: ['dumbbells'], weightOptions: [{ equipment: 'dumbbells', tier: 'medium' }], avoidIf: ['knee', 'lower_back'], priority: 2 },
+  { id: 'dumbbell_squat', nameFr: 'Squat haltères', muscles: ['legs', 'glutes'], equipment: ['dumbbells'], weightOptions: [{ equipment: 'dumbbells', tier: 'medium' }], avoidIf: ['knee', 'lower_back'], priority: 2 },
+  { id: 'hammer_curl', nameFr: 'Curl marteau', muscles: ['arms'], equipment: ['dumbbells'], weightOptions: [{ equipment: 'dumbbells', tier: 'medium' }], avoidIf: ['wrist'], priority: 2 },
+  { id: 'front_raise', nameFr: 'Élévations frontales', muscles: ['shoulders'], equipment: ['dumbbells'], weightOptions: [{ equipment: 'dumbbells', tier: 'light' }], avoidIf: ['shoulder'], priority: 2 },
+  { id: 'bear_crawl', nameFr: 'Bear crawl', muscles: ['core', 'shoulders', 'legs'], equipment: ['mat'], avoidIf: ['wrist', 'shoulder'], priority: 2 },
+  { id: 'squat_pulse', nameFr: 'Squats pulsés', muscles: ['legs', 'glutes'], equipment: [], avoidIf: ['knee'], priority: 2 },
+  { id: 'v_up', nameFr: 'V-ups', muscles: ['core'], equipment: ['mat'], avoidIf: ['lower_back', 'neck'], priority: 2 },
+  { id: 'skater_hops', nameFr: 'Sauts latéraux', muscles: ['legs', 'glutes'], equipment: [], avoidIf: ['knee'], highImpact: true, priority: 2 },
+  { id: 'inchworm', nameFr: 'Inchworm', muscles: ['core', 'shoulders', 'legs'], equipment: ['mat'], avoidIf: ['wrist', 'lower_back'], priority: 1 },
+  { id: 'kettlebell_farmer_carry', nameFr: 'Farmer walk', muscles: ['back', 'core', 'legs'], equipment: ['kettlebell'], weightOptions: [{ equipment: 'kettlebell', tier: 'heavy' }], avoidIf: ['lower_back', 'wrist'], priority: 2 },
+  { id: 'band_chest_press', nameFr: 'Presse poitrine élastique', muscles: ['chest', 'arms'], equipment: ['resistance_bands'], avoidIf: ['shoulder'], priority: 2 },
+  { id: 'single_leg_glute_bridge', nameFr: 'Pont fessier unijambiste', muscles: ['glutes', 'legs'], equipment: ['mat'], avoidIf: ['lower_back', 'knee'], priority: 2 },
+  { id: 'plank_up_down', nameFr: 'Planche haut/bas', muscles: ['core', 'arms'], equipment: ['mat'], avoidIf: ['wrist', 'shoulder'], priority: 2 }
 ];
 
 window.WARMUP_BLOCKS = [

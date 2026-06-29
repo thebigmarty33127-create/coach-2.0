@@ -80,6 +80,38 @@ function pickExercises(candidates, muscles, count) {
   return picked.slice(0, count);
 }
 
+function exerciseIntensity(ex, userEquipment) {
+  let score = 0;
+
+  if (ex.highImpact) score += 50;
+
+  if (ex.weightOptions?.length) {
+    const applicable = ex.weightOptions.filter(o => userEquipment.includes(o.equipment));
+    if (applicable.length) {
+      const minTier = Math.min(...applicable.map(o => TIER_RANK[o.tier]));
+      score += minTier * 12;
+    }
+  }
+
+  const usesFreeWeights = ex.equipment.some(
+    e => (e === 'dumbbells' || e === 'kettlebell') && userEquipment.includes(e)
+  );
+  if (usesFreeWeights && !ex.weightOptions?.length) score += 10;
+
+  const accessoryOnly = ex.equipment.length > 0 &&
+    ex.equipment.every(e => ['mat', 'bench', 'pull_up_bar', 'resistance_bands'].includes(e));
+  if (accessoryOnly && !ex.highImpact) score += 4;
+
+  return score;
+}
+
+function orderByProgressiveIntensity(exercises, userEquipment) {
+  return [...exercises].sort((a, b) => {
+    const diff = exerciseIntensity(a, userEquipment) - exerciseIntensity(b, userEquipment);
+    return diff !== 0 ? diff : Math.random() - 0.5;
+  });
+}
+
 function maxExerciseCount(durationMinutes, timePerExercise) {
   const exerciseSeconds = timePerExercise * 60;
   const blockSeconds = exerciseSeconds + TRANSITION_SECONDS;
@@ -143,11 +175,16 @@ function generateWorkout({ equipment, muscles, injuries, duration, noJumpRun, ba
   const reservedSeconds = estimatePhasesSeconds(warmupPhases) + PREP_SECONDS;
   const mainDurationMinutes = Math.max(1, (duration * 60 - reservedSeconds) / 60);
 
+  const userEquipment = equipment.includes('bodyweight')
+    ? equipment
+    : ['bodyweight', ...equipment];
+
   const exerciseCount = Math.min(
     candidates.length,
     maxExerciseCount(mainDurationMinutes, EXERCISE_DURATION_MINUTES)
   );
-  const selected = pickExercises(candidates, muscles, exerciseCount);
+  const picked = pickExercises(candidates, muscles, exerciseCount);
+  const selected = orderByProgressiveIntensity(picked, userEquipment);
   const mainPhases = buildMainPhases(selected, EXERCISE_DURATION_MINUTES);
 
   const phases = [

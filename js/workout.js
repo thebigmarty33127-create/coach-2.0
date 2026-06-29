@@ -105,7 +105,7 @@ function runPhase(phase, callback) {
   cancelAnimationFrame(rafId);
   currentPhase = phase;
   phaseCallback = callback;
-  phaseBeeps = { at2: false, at1: false, at0: false };
+  phaseBeeps = { atHalf: false, at2: false, at1: false, at0: false };
 
   phaseDuration = phase.seconds * 1000;
   remainingPhaseMs = phaseDuration;
@@ -129,6 +129,10 @@ function startPhaseAnimate() {
     const remainingSec = remaining / 1000;
     const displaySec = Math.ceil(remainingSec);
 
+    if (elapsed >= phaseDuration / 2 && !phaseBeeps.atHalf) {
+      phaseBeeps.atHalf = true;
+      Sounds.playShort();
+    }
     if (displaySec === 2 && !phaseBeeps.at2) {
       phaseBeeps.at2 = true;
       Sounds.playShort();

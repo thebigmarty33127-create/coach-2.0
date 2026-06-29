@@ -27,6 +27,11 @@ const FINISH_MESSAGES = [
   { title: 'Well done !', subtitle: 'Mission accomplie pour aujourd\'hui.' }
 ];
 
+function resetTopbarStats() {
+  document.getElementById('timeLeft').innerText = '--:--';
+  document.getElementById('exerciseProgress').innerText = '--';
+}
+
 function showFinishScreen(completedExercises) {
   const msg = FINISH_MESSAGES[Math.floor(Math.random() * FINISH_MESSAGES.length)];
   const list = completedExercises || [];
@@ -48,10 +53,12 @@ function showFinishScreen(completedExercises) {
   }
 
   showScreen('finish');
+  resetTopbarStats();
 }
 
 function goHome() {
   currentWorkout = null;
+  resetTopbarStats();
   const profile = Profile.loadProfile() || Profile.DEFAULT_PROFILE;
   Profile.applyProfileToSetupForm(profile);
   showScreen('setup');
