@@ -67,6 +67,7 @@ function goHome() {
 function initApp() {
   const profile = Profile.loadProfile() || Profile.DEFAULT_PROFILE;
   Profile.initChipGroups(profile);
+  initIntensitySlider();
 
   if (!Profile.hasProfile()) {
     Profile.applyProfileToProfileForm(profile);
@@ -116,8 +117,10 @@ function createSession() {
     injuries: form.injuries,
     duration: form.duration,
     noJumpRun: form.noJumpRun,
-    bannedExercises: profile.bannedExercises || [],
-    weights: profile.weights || {}
+    exerciseFilterMode: profile.exerciseFilterMode || 'exclude',
+    exerciseSelection: profile.exerciseSelection || [],
+    weights: profile.weights || {},
+    intensity: form.intensity
   });
 
   if (result.error) {
@@ -151,7 +154,35 @@ function renderPreview(workout) {
 
   document.getElementById('previewMeta').innerText =
     workout.exercises.length + ' exercices · ~' +
-    Generator.formatDuration(workout.estimatedSeconds);
+    Generator.formatDuration(workout.estimatedSeconds) +
+    (workout.transitionSeconds > 0
+      ? ' · ' + workout.transitionSeconds + ' s de repos entre exercices'
+      : ' · enchaînement sans repos');
+}
+
+function updateIntensityLabel() {
+  const slider = document.getElementById('setupIntensity');
+  const label = document.getElementById('setupIntensityLabel');
+  if (!slider || !label) return;
+
+  const intensity = parseInt(slider.value, 10);
+  const rest = Generator.transitionSecondsFromIntensity(intensity);
+  label.innerText = rest > 0
+    ? rest + ' s de repos entre exercices'
+    : 'Enchaînement sans repos';
+
+  const ratio = intensity / 33;
+  const r = Math.round(59 + ratio * (239 - 59));
+  const g = Math.round(130 - ratio * 130);
+  const b = Math.round(246 - ratio * (246 - 68));
+  slider.style.setProperty('--thumb-color', `rgb(${r}, ${g}, ${b})`);
+}
+
+function initIntensitySlider() {
+  const slider = document.getElementById('setupIntensity');
+  if (!slider) return;
+  slider.addEventListener('input', updateIntensityLabel);
+  updateIntensityLabel();
 }
 
 function startFromPreview() {

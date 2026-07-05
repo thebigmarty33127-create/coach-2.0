@@ -1,4 +1,3 @@
-const TRANSITION_SECONDS = 10;
 const EXERCISE_DURATION_MINUTES = 1;
 
 function hasEquipment(userEquipment, required) {
@@ -20,15 +19,25 @@ function hasMatchingWeight(exercise, userEquipment, userWeights) {
   });
 }
 
-function filterExercises(equipment, muscles, injuries, noJumpRun, bannedExercises, weights) {
-  const banned = bannedExercises || [];
+function transitionSecondsFromIntensity(intensity) {
+  const level = Math.min(33, Math.max(0, intensity ?? 23));
+  return 33 - level;
+}
+
+function filterExercises(equipment, muscles, injuries, noJumpRun, exerciseFilterMode, exerciseSelection, weights) {
+  const selection = exerciseSelection || [];
   const userWeights = weights || {};
   const userEquipment = equipment.includes('bodyweight')
     ? equipment
     : ['bodyweight', ...equipment];
 
   return EXERCISES.filter(ex => {
-    if (banned.includes(ex.id)) return false;
+    if (exerciseFilterMode === 'include_only' && selection.length && !selection.includes(ex.id)) {
+      return false;
+    }
+    if (exerciseFilterMode !== 'include_only' && selection.includes(ex.id)) {
+      return false;
+    }
     if (!hasEquipment(userEquipment, ex.equipment)) return false;
     if (!hasMatchingWeight(ex, userEquipment, userWeights)) return false;
     if (ex.avoidIf.some(i => injuries.includes(i))) return false;
@@ -52,29 +61,65 @@ function shuffle(arr) {
   return copy;
 }
 
-function pickExercises(candidates, muscles, count) {
+function pickRandomExcluding(pool, excludeId) {
+  const choices = excludeId && pool.length > 1
+    ? pool.filter(ex => ex.id !== excludeId)
+    : pool;
+  const source = choices.length ? choices : pool;
+  return source[Math.floor(Math.random() * source.length)];
+}
+
+function ensureNoConsecutiveDuplicates(exercises, candidates) {
+  if (exercises.length < 2 || candidates.length < 2) return exercises;
+
+  const result = [...exercises];
+  for (let i = 1; i < result.length; i++) {
+    if (result[i].id !== result[i - 1].id) continue;
+
+    let fixed = false;
+    for (let j = i + 1; j < result.length; j++) {
+      if (result[j].id === result[i - 1].id) continue;
+      if (j + 1 < result.length && result[j].id === result[j + 1].id) continue;
+      [result[i], result[j]] = [result[j], result[i]];
+      fixed = true;
+      break;
+    }
+
+    if (!fixed) {
+      const alt = pickRandomExcluding(candidates, result[i - 1].id);
+      if (alt) result[i] = alt;
+    }
+  }
+
+  return result;
+}
+
+function pickExercises(candidates, muscles, count, previousId = null) {
+  if (!candidates.length) return [];
+
   const scored = candidates
     .map(ex => ({ ex, score: scoreExercise(ex, muscles) }))
     .sort((a, b) => b.score - a.score);
 
-  const topPool = scored.slice(0, Math.max(count * 2, count));
+  const topPool = scored.slice(0, Math.max(count * 2, scored.length));
+  const poolExercises = topPool.map(p => p.ex);
   const shuffled = shuffle(topPool);
   const picked = [];
   const usedMuscles = new Set();
 
   for (const { ex } of shuffled) {
     if (picked.length >= count) break;
+    const lastId = picked.length ? picked[picked.length - 1].id : previousId;
+    if (lastId && ex.id === lastId && candidates.length > 1) continue;
     const addsCoverage = ex.muscles.some(m => muscles.includes(m) && !usedMuscles.has(m));
-    if (picked.length < count - 1 && !addsCoverage && picked.length > 0) continue;
+    if (picked.length < count - 1 && !addsCoverage && picked.length > 0 && candidates.length > 1) continue;
     picked.push(ex);
     ex.muscles.forEach(m => { if (muscles.includes(m)) usedMuscles.add(m); });
   }
 
-  if (picked.length < count) {
-    for (const { ex } of shuffled) {
-      if (picked.length >= count) break;
-      if (!picked.includes(ex)) picked.push(ex);
-    }
+  while (picked.length < count) {
+    const lastId = picked.length ? picked[picked.length - 1].id : previousId;
+    picked.push(pickRandomExcluding(poolExercises, lastId));
   }
 
   return picked.slice(0, count);
@@ -128,18 +173,15 @@ function pickExercisesTwoPart(candidates, muscles, count, userEquipment) {
   }
 
   const firstPart = pickExercises(lightPool, muscles, lightCount);
-  const usedIds = new Set(firstPart.map(ex => ex.id));
-  let mainPool = candidates.filter(ex => !usedIds.has(ex.id));
-  if (!mainPool.length) mainPool = candidates;
-
-  const secondPart = pickExercises(mainPool, muscles, count - firstPart.length);
-  return [...firstPart, ...secondPart];
+  const lastFirst = firstPart[firstPart.length - 1]?.id ?? null;
+  const secondPart = pickExercises(candidates, muscles, count - firstPart.length, lastFirst);
+  return ensureNoConsecutiveDuplicates([...firstPart, ...secondPart], candidates);
 }
 
-function maxExerciseCount(durationMinutes, timePerExercise) {
+function maxExerciseCount(durationMinutes, timePerExercise, transitionSeconds) {
   const exerciseSeconds = timePerExercise * 60;
-  const blockSeconds = exerciseSeconds + TRANSITION_SECONDS;
-  return Math.max(1, Math.floor((durationMinutes * 60 + TRANSITION_SECONDS) / blockSeconds));
+  const blockSeconds = exerciseSeconds + transitionSeconds;
+  return Math.max(1, Math.floor((durationMinutes * 60 + transitionSeconds) / blockSeconds));
 }
 
 function buildWarmupPhases(noJumpRun) {
@@ -160,7 +202,7 @@ function buildWarmupPhases(noJumpRun) {
   }));
 }
 
-function buildMainPhases(exercises, timePerExercise) {
+function buildMainPhases(exercises, timePerExercise, transitionSeconds) {
   const phases = [];
   const exerciseSeconds = timePerExercise * 60;
 
@@ -172,12 +214,13 @@ function buildMainPhases(exercises, timePerExercise) {
       seconds: exerciseSeconds
     });
 
-    if (i < exercises.length - 1) {
+    if (i < exercises.length - 1 && transitionSeconds > 0) {
       phases.push({
         type: 'transition',
         exerciseName: ex.nameFr,
+        nextExerciseId: exercises[i + 1].id,
         nextExerciseName: exercises[i + 1].nameFr,
-        seconds: TRANSITION_SECONDS
+        seconds: transitionSeconds
       });
     }
   });
@@ -189,8 +232,14 @@ function estimatePhasesSeconds(phases) {
   return phases.reduce((sum, p) => sum + p.seconds, 0);
 }
 
-function generateWorkout({ equipment, muscles, injuries, duration, noJumpRun, bannedExercises, weights }) {
-  const candidates = filterExercises(equipment, muscles, injuries, noJumpRun, bannedExercises, weights);
+function generateWorkout({
+  equipment, muscles, injuries, duration, noJumpRun,
+  exerciseFilterMode, exerciseSelection, weights, intensity
+}) {
+  const transitionSeconds = transitionSecondsFromIntensity(intensity);
+  const candidates = filterExercises(
+    equipment, muscles, injuries, noJumpRun, exerciseFilterMode, exerciseSelection, weights
+  );
   if (candidates.length === 0) {
     return { error: 'Aucun exercice compatible — modifiez équipement, charges, muscles ou blessures.' };
   }
@@ -203,12 +252,11 @@ function generateWorkout({ equipment, muscles, injuries, duration, noJumpRun, ba
     ? equipment
     : ['bodyweight', ...equipment];
 
-  const exerciseCount = Math.min(
-    candidates.length,
-    maxExerciseCount(mainDurationMinutes, EXERCISE_DURATION_MINUTES)
+  const exerciseCount = maxExerciseCount(
+    mainDurationMinutes, EXERCISE_DURATION_MINUTES, transitionSeconds
   );
   const selected = pickExercisesTwoPart(candidates, muscles, exerciseCount, userEquipment);
-  const mainPhases = buildMainPhases(selected, EXERCISE_DURATION_MINUTES);
+  const mainPhases = buildMainPhases(selected, EXERCISE_DURATION_MINUTES, transitionSeconds);
 
   const phases = [
     ...warmupPhases,
@@ -232,12 +280,15 @@ function generateWorkout({ equipment, muscles, injuries, duration, noJumpRun, ba
       name: ex.nameFr,
       durationMinutes: EXERCISE_DURATION_MINUTES
     })),
+    transitionSeconds,
+    intensity: Math.min(33, Math.max(0, intensity ?? 23)),
     estimatedSeconds: estimatePhasesSeconds(phases)
   };
 }
 
 window.Generator = {
   generateWorkout,
+  transitionSecondsFromIntensity,
   formatDuration(seconds) {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;

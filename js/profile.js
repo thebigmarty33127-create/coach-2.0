@@ -9,7 +9,8 @@ const DEFAULT_PROFILE = {
   equipment: ['bodyweight', 'mat'],
   muscles: ['chest', 'back', 'core'],
   injuries: [],
-  bannedExercises: [],
+  exerciseFilterMode: 'exclude',
+  exerciseSelection: [],
   weights: { ...DEFAULT_WEIGHTS },
   noJumpRun: false,
   defaultDuration: 30
@@ -29,7 +30,13 @@ function loadProfile() {
     const parsed = { ...DEFAULT_PROFILE, ...JSON.parse(raw) };
     delete parsed.defaultReps;
     delete parsed.defaultTimePerExercise;
-    if (!Array.isArray(parsed.bannedExercises)) parsed.bannedExercises = [];
+    if (!parsed.exerciseFilterMode) {
+      parsed.exerciseFilterMode = 'exclude';
+    }
+    if (!Array.isArray(parsed.exerciseSelection)) {
+      parsed.exerciseSelection = Array.isArray(parsed.bannedExercises) ? parsed.bannedExercises : [];
+    }
+    delete parsed.bannedExercises;
     parsed.weights = normalizeWeights(parsed.weights);
     return parsed;
   } catch {
@@ -77,7 +84,8 @@ function readSessionForm() {
     muscles: readFormSelections('setupMuscles'),
     injuries: readFormSelections('setupInjuries'),
     noJumpRun: document.getElementById('setupNoJumpRun').checked,
-    duration: parseInt(document.getElementById('setupDuration').value, 10)
+    duration: parseInt(document.getElementById('setupDuration').value, 10),
+    intensity: parseInt(document.getElementById('setupIntensity').value, 10)
   };
 }
 
@@ -92,7 +100,8 @@ function readProfileForm() {
     equipment,
     muscles: readFormSelections('profileMuscles'),
     injuries: readFormSelections('profileInjuries'),
-    bannedExercises: readFormSelections('profileBannedExercises'),
+    exerciseFilterMode: readExerciseFilterMode(),
+    exerciseSelection: readFormSelections('profileExerciseSelection'),
     weights,
     noJumpRun: document.getElementById('profileNoJumpRun').checked,
     defaultDuration: parseInt(document.getElementById('profileDuration').value, 10)
@@ -111,10 +120,33 @@ function applyProfileToProfileForm(profile) {
   setFormSelections('profileEquipment', profile.equipment);
   setFormSelections('profileMuscles', profile.muscles);
   setFormSelections('profileInjuries', profile.injuries);
-  buildBannedExerciseList(profile.bannedExercises || []);
+  setExerciseFilterMode(profile.exerciseFilterMode || 'exclude');
+  buildExerciseSelectionList(profile.exerciseSelection || [], profile.exerciseFilterMode || 'exclude');
   buildWeightSections(profile.weights || DEFAULT_WEIGHTS, profile.equipment);
   document.getElementById('profileNoJumpRun').checked = !!profile.noJumpRun;
   document.getElementById('profileDuration').value = profile.defaultDuration;
+}
+
+function readExerciseFilterMode() {
+  const selected = document.querySelector('.filter-mode-btn.selected');
+  return selected?.dataset.mode === 'include_only' ? 'include_only' : 'exclude';
+}
+
+function setExerciseFilterMode(mode) {
+  document.querySelectorAll('.filter-mode-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.mode === mode);
+  });
+  updateExerciseFilterHint(mode);
+  const selected = readFormSelections('profileExerciseSelection');
+  buildExerciseSelectionList(selected, mode);
+}
+
+function updateExerciseFilterHint(mode) {
+  const hint = document.getElementById('profileExerciseFilterHint');
+  if (!hint) return;
+  hint.innerText = mode === 'include_only'
+    ? 'Seuls les exercices sélectionnés apparaîtront dans vos séances.'
+    : 'Les exercices sélectionnés ne seront jamais proposés dans vos séances.';
 }
 
 function buildChipGroup(containerId, options, selectedValues) {
@@ -166,16 +198,29 @@ function onProfileEquipmentChange() {
   }, 0);
 }
 
-function buildBannedExerciseList(bannedIds) {
-  const container = document.getElementById('profileBannedExercises');
+function buildExerciseSelectionList(selectedIds, mode) {
+  const container = document.getElementById('profileExerciseSelection');
+  const chipClass = mode === 'include_only' ? 'chip-allow' : 'chip-ban';
   const sorted = [...EXERCISES].sort((a, b) => a.nameFr.localeCompare(b.nameFr, 'fr'));
   container.innerHTML = sorted.map(ex => {
-    const selected = bannedIds.includes(ex.id) ? ' selected' : '';
-    return `<button type="button" class="chip chip-ban${selected}" data-value="${ex.id}">${ex.nameFr}</button>`;
+    const selected = selectedIds.includes(ex.id) ? ' selected' : '';
+    return `<button type="button" class="chip ${chipClass}${selected}" data-value="${ex.id}">${ex.nameFr}</button>`;
   }).join('');
 
   container.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+}
+
+function initExerciseFilterModeToggle() {
+  const container = document.querySelector('.filter-mode-toggle');
+  if (!container || container.dataset.bound) return;
+  container.dataset.bound = '1';
+  container.querySelectorAll('.filter-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('selected')) return;
+      setExerciseFilterMode(btn.dataset.mode);
+    });
   });
 }
 
@@ -186,7 +231,9 @@ function initChipGroups(profile) {
   buildChipGroup('profileEquipment', EQUIPMENT_OPTIONS, profile.equipment);
   buildChipGroup('profileMuscles', MUSCLE_OPTIONS, profile.muscles);
   buildChipGroup('profileInjuries', INJURY_OPTIONS, profile.injuries);
-  buildBannedExerciseList(profile.bannedExercises || []);
+  setExerciseFilterMode(profile.exerciseFilterMode || 'exclude');
+  buildExerciseSelectionList(profile.exerciseSelection || [], profile.exerciseFilterMode || 'exclude');
+  initExerciseFilterModeToggle();
   buildWeightSections(profile.weights || DEFAULT_WEIGHTS, profile.equipment);
 
   const profileEquipment = document.getElementById('profileEquipment');

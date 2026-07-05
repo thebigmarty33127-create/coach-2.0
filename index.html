@@ -357,6 +357,100 @@ body::before {
   color: #fca5a5;
 }
 
+.chip-allow.selected {
+  background: rgba(34,197,94,0.15);
+  border-color: rgba(34,197,94,0.5);
+  color: #86efac;
+}
+
+.filter-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.filter-mode-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.filter-mode-btn.selected {
+  background: rgba(59,130,246,0.15);
+  border-color: rgba(59,130,246,0.45);
+  color: #93c5fd;
+}
+
+.intensity-field label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+#setupIntensityLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.intensity-slider-wrap {
+  position: relative;
+  padding: 4px 0 2px;
+}
+
+.intensity-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #3b82f6, #ef4444);
+  outline: none;
+  cursor: pointer;
+}
+
+.intensity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--thumb-color, #3b82f6);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  cursor: pointer;
+}
+
+.intensity-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--thumb-color, #3b82f6);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  cursor: pointer;
+}
+
+.intensity-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.intensity-scale span:last-child { color: #fca5a5; }
+
 .banned-scroll {
   max-height: 160px;
   overflow-y: auto;
@@ -367,14 +461,17 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 24px;
-  max-width: 200px;
+  gap: 10px;
+  min-height: 32px;
+  max-width: 100%;
+  width: 100%;
+  padding: 0 4px;
 }
 
 .exercise-name-row .exercise-name {
   min-height: 0;
   max-width: none;
+  flex: 1;
 }
 
 .modal-overlay {
@@ -521,11 +618,120 @@ body::before {
   flex-direction: column;
   align-items: center;
   animation: fadeUp 0.5s ease;
+  width: 100%;
+  max-width: 400px;
 }
 
-.timer-wrap { position: relative; margin: 8px 0 12px; }
+.session-progress {
+  width: 100%;
+  height: 4px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+
+.session-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3b82f6, #22c55e);
+  transition: width 0.35s linear;
+  box-shadow: 0 0 12px rgba(34,197,94,0.45);
+}
+
+.workout-area[data-phase="warmup"] .session-progress-fill {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  box-shadow: 0 0 12px rgba(245,158,11,0.45);
+}
+
+.workout-area[data-phase="exercise"] .session-progress-fill {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  box-shadow: 0 0 12px rgba(239,68,68,0.45);
+}
+
+.workout-area[data-phase="transition"] .session-progress-fill,
+.workout-area[data-phase="prep"] .session-progress-fill {
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  box-shadow: 0 0 12px rgba(6,182,212,0.45);
+}
+
+.workout-exercise-header {
+  width: 100%;
+  max-width: 360px;
+  min-height: 80px;
+  margin-bottom: 8px;
+  padding: 0 8px;
+  text-align: center;
+}
+
+.workout-exercise-header.is-empty {
+  visibility: hidden;
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+.workout-exercise-header.phase-enter {
+  animation: exerciseEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.workout-exercise-header .exercise-name-row {
+  max-width: none;
+  min-height: 0;
+}
+
+.workout-exercise-header .exercise-name {
+  font-size: clamp(28px, 8vw, 36px);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  min-height: 0;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.workout-exercise-header .phase-hint {
+  margin-top: 8px;
+  max-width: none;
+  font-size: 13px;
+  animation: hintFade 0.6s ease 0.15s both;
+}
+
+@keyframes exerciseEnter {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes hintFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.timer-wrap {
+  position: relative;
+  margin: 4px 0 16px;
+}
+
+.timer-glow {
+  position: absolute;
+  inset: -28px;
+  border-radius: 50%;
+  opacity: 0.55;
+  filter: blur(48px);
+  pointer-events: none;
+  transition: background 0.7s ease, opacity 0.7s ease;
+  animation: glowBreathe 4s ease-in-out infinite;
+}
+
+@keyframes glowBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.45; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
 
 .timer-ring {
+  position: relative;
+  z-index: 1;
   width: 260px;
   height: 260px;
   border-radius: 50%;
@@ -533,7 +739,31 @@ body::before {
   justify-content: center;
   align-items: center;
   box-shadow: 0 0 0 4px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.4);
-  transition: box-shadow 0.4s;
+  transition: box-shadow 0.5s ease;
+  will-change: transform;
+}
+
+.timer-ring.phase-swap {
+  animation: ringEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes ringEnter {
+  0% { transform: scale(0.92); opacity: 0.7; }
+  65% { transform: scale(1.03); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.timer-ring.urgent {
+  animation: ringGlowUrgent 0.85s ease-in-out infinite;
+}
+
+@keyframes ringGlowUrgent {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(239,68,68,0.2), 0 0 30px rgba(239,68,68,0.25), 0 20px 60px rgba(0,0,0,0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239,68,68,0.35), 0 0 55px rgba(239,68,68,0.45), 0 20px 60px rgba(0,0,0,0.4);
+  }
 }
 
 .timer-ring.phase-prep  { box-shadow: 0 0 0 4px rgba(59,130,246,0.15), 0 0 40px rgba(59,130,246,0.2), 0 20px 60px rgba(0,0,0,0.4); }
@@ -550,8 +780,8 @@ body::before {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 2px;
-  padding: 12px;
+  gap: 6px;
+  padding: 16px 12px;
 }
 
 .timer-value {
@@ -560,31 +790,23 @@ body::before {
   line-height: 1;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
-.exercise-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--muted);
-  max-width: 160px;
-  line-height: 1.3;
-  min-height: 18px;
+.timer-value.tick {
+  animation: timerTick 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.phase-hint {
-  margin-top: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.35;
-  text-align: center;
-  max-width: 180px;
-  letter-spacing: 0.02em;
+.timer-value.urgent {
+  color: #fca5a5;
+  text-shadow: 0 0 24px rgba(239,68,68,0.55);
 }
 
-.phase-hint:empty { display: none; }
-
-.phase-hint.series { color: #fca5a5; }
-.phase-hint.warmup { color: #fcd34d; }
+@keyframes timerTick {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
 
 .phase-badge {
   display: inline-block;
@@ -595,7 +817,56 @@ body::before {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 4px;
+  transition: background 0.4s ease, color 0.4s ease, transform 0.4s ease;
 }
+
+.phase-badge.badge-pop {
+  animation: badgePop 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0.85); opacity: 0.5; }
+  70% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.phase-hint {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.phase-hint:empty { display: none; }
+
+.phase-hint.series { color: #fca5a5; }
+.phase-hint.warmup { color: #fcd34d; }
+.workout-exercise-header.is-rest-prep .exercise-name {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rest-prep-intro {
+  display: block;
+  font-size: clamp(16px, 4.5vw, 20px);
+  font-weight: 600;
+  color: #67e8f9;
+  letter-spacing: 0.01em;
+}
+
+.rest-prep-target {
+  display: block;
+  font-size: clamp(28px, 8vw, 36px);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.phase-hint.rest { color: #67e8f9; }
+.phase-hint.prep { color: #93c5fd; }
 
 .phase-badge.prep   { background: rgba(59,130,246,0.2); color: #93c5fd; }
 .phase-badge.warmup { background: rgba(245,158,11,0.2); color: #fcd34d; }
@@ -604,10 +875,13 @@ body::before {
 
 #nextInfo {
   margin: 4px 0 20px;
-  font-size: 15px;
-  color: var(--muted);
-  min-height: 22px;
-  max-width: 320px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  min-height: 26px;
+  max-width: 340px;
+  text-align: center;
+  line-height: 1.35;
 }
 
 .controls {
@@ -615,6 +889,70 @@ body::before {
   gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(12,18,34,0.72);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.pause-overlay.visible {
+  opacity: 1;
+}
+
+.pause-overlay span {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+body.in-workout::before {
+  transition: opacity 1s ease;
+}
+
+body.workout-phase-exercise::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(239,68,68,0.22), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(34,197,94,0.08), transparent),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgba(239,68,68,0.12), transparent);
+}
+
+body.workout-phase-warmup::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(245,158,11,0.22), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(34,197,94,0.08), transparent),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgba(245,158,11,0.1), transparent);
+}
+
+body.workout-phase-transition::before,
+body.workout-phase-prep::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(6,182,212,0.2), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(59,130,246,0.12), transparent),
+    radial-gradient(ellipse 50% 40% at 0% 80%, rgba(6,182,212,0.08), transparent);
+}
+
+.stat-pill.stat-pop strong {
+  animation: statPop 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes statPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.15); color: #22c55e; }
+  100% { transform: scale(1); }
 }
 
 .finish-screen {
@@ -723,9 +1061,13 @@ body::before {
     <span>Pas de sauts ni de course<small>Idéal en appartement — échauffement et séance adaptés</small></span>
   </label>
   <div class="field">
-    <label>Exercices à exclure (optionnel)</label>
-    <small style="display:block;margin:-4px 0 10px;color:var(--muted);font-size:12px;">Sélectionnez les exercices que vous ne voulez jamais voir dans vos séances.</small>
-    <div id="profileBannedExercises" class="chip-group banned-scroll"></div>
+    <label>Filtrage des exercices (optionnel)</label>
+    <div class="filter-mode-toggle">
+      <button type="button" class="filter-mode-btn selected" data-mode="exclude">Exclure la sélection</button>
+      <button type="button" class="filter-mode-btn" data-mode="include_only">Garder uniquement la sélection</button>
+    </div>
+    <small id="profileExerciseFilterHint" style="display:block;margin:-2px 0 10px;color:var(--muted);font-size:12px;">Les exercices sélectionnés ne seront jamais proposés dans vos séances.</small>
+    <div id="profileExerciseSelection" class="chip-group banned-scroll"></div>
   </div>
   <div class="field">
     <label for="profileDuration">Durée totale (min)</label>
@@ -757,6 +1099,20 @@ body::before {
     <input type="checkbox" id="setupNoJumpRun">
     <span>Pas de sauts ni de course<small>Idéal en appartement — échauffement et séance adaptés</small></span>
   </label>
+  <div class="field intensity-field">
+    <label for="setupIntensity">
+      Intensité
+      <span id="setupIntensityLabel">10 s de repos entre exercices</span>
+    </label>
+    <div class="intensity-slider-wrap">
+      <input type="range" id="setupIntensity" class="intensity-slider" min="0" max="33" value="23">
+    </div>
+    <div class="intensity-scale">
+      <span>Douce</span>
+      <span>Maximale</span>
+    </div>
+    <small class="field-hint">Plus l'intensité monte, moins il y a de repos entre les exercices.</small>
+  </div>
   <div class="field">
     <label for="setupDuration">Durée totale (min)</label>
     <input id="setupDuration" type="number" min="5" placeholder="30">
@@ -781,16 +1137,23 @@ body::before {
 
 <!-- Active workout -->
 <div id="workout" class="workout-area" style="display:none;">
+  <div class="session-progress" aria-hidden="true">
+    <div id="sessionProgressFill" class="session-progress-fill"></div>
+  </div>
+  <div id="workoutExerciseHeader" class="workout-exercise-header is-empty">
+    <div class="exercise-name-row">
+      <div id="exerciseName" class="exercise-name"></div>
+      <button id="workoutHelpBtn" type="button" class="help-btn" style="display:none" aria-label="Comment faire">?</button>
+    </div>
+    <div id="phaseHint" class="phase-hint" aria-live="polite"></div>
+  </div>
   <div class="timer-wrap">
+    <div id="timerGlow" class="timer-glow"></div>
     <div id="circle" class="timer-ring">
+      <div id="pauseOverlay" class="pause-overlay"><span>Pause</span></div>
       <div class="timer-inner">
         <div id="label" class="phase-badge"></div>
         <div id="timerValue" class="timer-value">--</div>
-        <div class="exercise-name-row">
-          <div id="exerciseName" class="exercise-name"></div>
-          <button id="workoutHelpBtn" type="button" class="help-btn" style="display:none" aria-label="Comment faire">?</button>
-        </div>
-        <div id="phaseHint" class="phase-hint" aria-live="polite"></div>
       </div>
     </div>
   </div>
